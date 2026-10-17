@@ -1,0 +1,65 @@
+# ===== 编译产物（绝对不能进 git）=====
+build/
+devel/
+install/
+log/
+*.o
+*.so
+*.so.*
+*.a
+*.out
+*.exe
+
+# ===== CMake =====
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+!Makefile.am
+
+# ===== ROS =====
+.bash_history
+*.bag
+*.db3
+
+# ===== IDE / 编辑器 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+tags
+compile_commands.json
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.ipynb_checkpoints/
+*.egg-info/
+
+# ===== 数据与媒体 =====
+*.log
+*.mp4
+*.avi
+*.png
+*.jpg
+*.jpeg
+!docs/**/*.png
+!docs/**/*.jpg
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 密钥（重要！别把私钥传上去）=====
+*.pem
+*.key
+id_rsa
+id_ed25519
+.env
+.secret
