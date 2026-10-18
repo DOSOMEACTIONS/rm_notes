@@ -171,3 +171,282 @@ git push -f                  # 会覆盖队友提交
 git reset --hard             # 会丢改动（除非你确定）
 git checkout -- 文件          # 不可恢复（用 restore/stash 代替）
 ```
+
+---
+---
+
+# 十、我的仓库地图（2026-10-18 实测）
+
+> 这一节是**你这台机器上的真实状态**，不是通用示例。
+
+---
+
+## 10.1 先搞清三个名字
+
+**GitHub 地址的格式永远是：`github.com/<用户名>/<仓库名>`**
+
+```
+git@github.com:DOSOMEACTIONS/missing-semester.git
+         └──────┘  └────────────┘  └─────────────┘
+         域名       ①用户名           ②仓库名
+```
+
+| # | 名字 | 是什么 | 地址 |
+|---|---|---|---|
+| ① | **OceanCing** | **老师的 GitHub 用户名**（团队仓库所有者） | github.com/OceanCing |
+| ② | **DOSOMEACTIONS** | **你的 GitHub 用户名**（你的账号） | github.com/DOSOMEACTIONS |
+| ③ | **missing-semester** | **仓库名**（老师和你的都叫这个，同名是 Fork 的默认行为） | — |
+
+**⚠️ 最容易搞混的：`missing-semester` 是「仓库名」，不是「用户名」。**
+
+```
+❌ OceanCing/missing-semester  →  "missing-semester 是老师名"  错
+✅ OceanCing/missing-semester  →  "OceanCing 是老师，missing-semester 是仓库"  对
+
+✅ DOSOMEACTIONS/missing-semester → "DOSOMEACTIONS 是我，missing-semester 是仓库"
+```
+
+---
+
+## 10.2 三个仓库的位置关系
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ① 团队仓库（老师有写权限，你只能读）                        │
+│     github.com/OceanCing/missing-semester                   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │  Fork（网页点一下）✅ 已做
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ② 你的 fork（你有完全权限，随便改）                         │
+│     github.com/DOSOMEACTIONS/missing-semester               │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │  Clone（git clone）✅ 已做
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ③ 你的电脑                                                 │
+│     ~/missing-semester                                      │
+│     当前分支: master                                        │
+│     当前 remote: origin（upstream 还没加 ⚠️）                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 10.3 你现在的真实状态（命令输出）
+
+```bash
+$ cd ~/missing-semester
+$ git remote -v
+origin  git@github.com:DOSOMEACTIONS/missing-semester.git (fetch)
+origin  git@github.com:DOSOMEACTIONS/missing-semester.git (push)
+
+$ git branch --show-current
+master
+```
+
+**解读：**
+
+| 项目 | 状态 | 说明 |
+|---|---|---|
+| 本地目录 | `~/missing-semester` | ✅ 已 clone |
+| remote `origin` | ✅ 指向你的 fork | clone 时自动加的 |
+| remote `upstream` | ❌ **还没加** | 第 4a 步没做 |
+| 当前分支 | `master` | ⚠️ **还没建自己的分支**（第 4b 步没做） |
+| 能不能 push | ✅ 能（推到你的 fork） | |
+| 能不能 pull 团队更新 | ❌ 不能（没 upstream） | |
+
+---
+
+## 10.4 四个方向 + 对应命令（你的场景版）
+
+```
+①团队仓库 OceanCing/missing-semester
+        │
+        │  Fork                       网页点一下（一次）
+        ▼
+②你的fork DOSOMEACTIONS/missing-semester
+        │
+        │  Clone                      git clone git@github.com:DOSOMEACTIONS/missing-semester.git
+        ▼
+③本地 ~/missing-semester (master)
+        │
+        │  Branch                     git switch -c feat/DOSOMEACTIONS-lesson1
+        ▼
+④本地分支 feat/DOSOMEACTIONS-lesson1
+        │
+        │  Commit                     git add / git commit
+        │  Push                       git push -u origin feat/DOSOMEACTIONS-lesson1
+        ▼
+⑤你的fork上的分支 → 发 PR 请求合并回 ①团队仓库
+```
+
+**反向（更新）方向：**
+
+```
+①团队仓库 ──git pull --rebase upstream master──▶ ③本地 master
+③本地 master ──git push origin master──▶ ②你的fork master
+```
+
+---
+
+## 10.5 origin vs upstream（两个遥控器）
+
+| 名字 | 指向 | 权限 | 用途 |
+|---|---|---|---|
+| **origin** | 你的 fork | ✅ 读写 | push 你的提交、pull 你自己的 |
+| **upstream** | 团队仓库 | ❌ 只读 | pull 团队最新更新（含 TASK.md 更新） |
+
+**为什么要两个：**
+
+```
+你的 fork 不会自动跟着团队仓库变。
+老师更新了 TASK.md → 你的 fork 里还是旧版
+→ 必须 git pull --rebase upstream master 手动拉
+```
+
+---
+
+## 10.6 你现在缺的两步（接下来做）
+
+```bash
+cd ~/missing-semester
+
+# 4a. 加 upstream（让能拉团队更新）
+git remote add upstream git@github.com:OceanCing/missing-semester.git
+git remote -v          # 应该看到 4 行：origin 两条 + upstream 两条
+
+# 4b. 建你自己的开发分支（TASK.md 第 1 条要求）
+git switch -c feat/DOSOMEACTIONS-lesson1
+git branch --show-current    # 应该显示 feat/DOSOMEACTIONS-lesson1
+```
+
+**做完之后你的状态应该变成：**
+
+```bash
+$ git remote -v
+origin    git@github.com:DOSOMEACTIONS/missing-semester.git (fetch)
+origin    git@github.com:DOSOMEACTIONS/missing-semester.git (push)
+upstream  git@github.com:OceanCing/missing-semester.git (fetch)
+upstream  git@github.com:OceanCing/missing-semester.git (push)
+
+$ git branch --show-current
+feat/DOSOMEACTIONS-lesson1
+```
+
+**注意 upstream 也有两条（fetch + push）** —— git 会给每个 remote 都生成一对，
+但你 push 到 upstream 会失败（没权限），这是正常的。
+
+---
+
+## 10.7 作业要建的目标结构
+
+```
+missing-semester/                    ← 仓库根（你自己电脑上的 ~/missing-semester）
+└── 2027/                            ← 任务文件夹
+    └── DOSOMEACTIONS/               ← ⭐ 用你的 GitHub 用户名命名
+        ├── notes/                   ← 笔记
+        │   └── lesson1-linux-vim-shell-git.md     ← 英文命名
+        └── homework/                ← 作业
+            ├── lesson1.sh           ← 可执行脚本
+            └── output.txt           ← 脚本跑出来的结果（也要提交）
+```
+
+**对应的命令：**
+
+```bash
+cd ~/missing-semester
+mkdir -p 2027/DOSOMEACTIONS/notes 2027/DOSOMEACTIONS/homework
+cd 2027/DOSOMEACTIONS
+touch notes/lesson1-linux-vim-shell-git.md
+vim notes/lesson1-linux-vim-shell-git.md
+```
+
+---
+
+## 10.8 提交与 PR（作业要求版）
+
+```bash
+cd ~/missing-semester
+
+# 确认在正确分支
+git branch --show-current      # feat/DOSOMEACTIONS-lesson1
+
+# 确认改了哪些文件
+git status -sb
+
+# 暂存 + 复查
+git add 2027/DOSOMEACTIONS
+git review                     # 摘要
+git what                       # 完整 diff
+
+# ⚠️ 提交信息：英文、大写开头、带句号
+git commit -m "Add lesson1 notes and homework script."
+
+# push 到你的 fork（不是团队仓库）
+git push -u origin feat/DOSOMEACTIONS-lesson1
+```
+
+**PR 标题格式**（英文、大写开头）：
+
+```
+Add lesson1 homework - DOSOMEACTIONS
+```
+
+**PR 描述**（可以中文，要说清提交了什么）：
+
+```
+新增第一课作业：
+- 2027/DOSOMEACTIONS/notes/lesson1-linux-vim-shell-git.md —— Linux/vim/shell/git 笔记
+- 2027/DOSOMEACTIONS/homework/lesson1.sh —— 输出系统时间、最近10条命令、笔记字数
+- 2027/DOSOMEACTIONS/homework/output.txt —— 脚本运行结果
+```
+
+---
+
+## 10.9 三条纪律（TASK.md 明确写了）
+
+| # | 纪律 | 犯错后果 |
+|---|---|---|
+| 1 | commit 消息**英文、大写开头、带句号** | 格式不规范 |
+| 2 | **不要 Close PR 重开** | **扣分**（TASK.md 第 9 条） |
+| 3 | 出现 Conflict 要**正确处理**，不是逃避 | 扣分 |
+
+**正确改 PR 的方式（不用关掉）：**
+
+```
+PR 开了之后想改内容 → 直接 push 新提交到同一个分支
+                   → PR 会自动更新（TASK.md 第 9 条说的）
+```
+
+---
+
+## 10.10 出现冲突怎么办（TASK.md 第 8 条预告了）
+
+```bash
+# ① 拉团队最新，可能会冲突
+git switch master
+git pull --rebase upstream master
+
+# ② 如果冲突了，看哪些文件
+git conflicts
+
+# ③ 用三栏对比解决（你已配好 meld）
+git mergetool
+
+# ④ 解决完继续
+git add 冲突文件
+git rebase --continue
+
+# ⑤ 推到自己 fork
+git push origin master
+
+# ⑥ 回到你的分支，把 master 的更新合并进来
+git switch feat/DOSOMEACTIONS-lesson1
+git rebase master
+git push -u origin feat/DOSOMEACTIONS-lesson1
+```
+
+**⚠️ 绝对不要用 `git push -f` 到 upstream，也不要用"Close PR 重开"来绕过冲突。**
