@@ -319,30 +319,40 @@ git checkout -- 文件          # 不可恢复（用 restore/stash）
 
 ---
 
-## 附录：你的当前进度（2026-10-18）
+## 附录：你的当前进度（2026-10-18 更新）
 
 ```
-第 0 层
+第 0 层 · 一次性准备
   ① 找仓库     ✅ github.com/OceanCing/missing-semester
-  ② Fork       ✅ 已做
+  ② Fork       ✅ DOSOMEACTIONS/missing-semester
   ③ Clone      ✅ ~/missing-semester
-  ④a upstream  ✅ 已加
+  ④a upstream  ✅ 已加（能拉团队更新）
   ④b 分支      ✅ feat/DOSOMEACTIONS-lesson1
 
-第 1 层
-  ⑤ 改文件     ⬜ 还没开始
-  ⑥ add        ⬜
-  ⑦ commit     ⬜
-  ⑧ push       ⬜
+第 1 层 · 日常循环
+  ⑤ 改文件     ✅ notes/lesson1-*.md + homework/lesson1.sh
+  ⑥ add        ✅ git add 2027/DOSOMEACTIONS
+  ⑦ commit     ✅ 9755655 "Add lesson1 notes and homework script."
+  ⑧ push       ✅ 推到 origin/feat/DOSOMEACTIONS-lesson1
 
-第 2 层
-  ⑨ 开 PR      ⬜
-  ⑩ 看评论     ⬜
+第 2 层 · 交付
+  ⑨ 开 PR      ✅ #12 Open，可自动合并，无冲突
+  ⑩ 看评论     ⏳ 等老师 review
 ```
 
-**DDL: 10月20日 23:59**
+**DDL: 10月20日 23:59 —— 已完成，提前 2 天 ✅**
 
-**下一步：进 `2027/DOSOMEACTIONS/` 建 `notes/` 和 `homework/`，开始写文件。**
+**下一步（等老师评论）：**
+```bash
+# 老师留评论要改的话
+vim 2027/DOSOMEACTIONS/notes/xxx.md
+git add 2027/DOSOMEACTIONS
+git commit -m "Fix formatting in notes."
+git push        # PR 自动更新，不用重开
+```
+
+**还没有内容的地方（可选补）：**
+笔记里 1.1 / 1.3 / 3.2 / 4.4 四节还空着，可以以后补 —— 补完 push 会自动更新 PR。
 
 ---
 
@@ -510,3 +520,158 @@ git pull --rebase origin main
 
 > **push 不看你改了什么文件，只看你的车钩链能不能接到对方车尾。**
 > **接不上就 fetch + 换车钩（rebase），别硬塞（push -f）。**
+
+---
+
+## 附录 C：我第一次 PR 的完整复盘（真实数据）
+
+> 日期：2026-10-18｜结果：**PR #12 已创建**
+> 地址：<https://github.com/OceanCing/missing-semester/pull/12>
+
+### C.1 这次的真实数据
+
+| 项目 | 值 |
+|---|---|
+| PR 编号 | #12 |
+| 标题 | `Add lesson1 homework - DOSOMEACTIONS` |
+| 方向 | `DOSOMEACTIONS:feat/DOSOMEACTIONS-lesson1` → `OceanCing:master` |
+| 提交数 | 1 个（`9755655`）|
+| 改动 | 3 个文件，+269 行 |
+| 冲突 | 无 |
+| 状态 | Open，可自动合并 |
+
+**三个文件：**
+
+```
+2027/DOSOMEACTIONS/notes/lesson1-linux-vim-shell-git.md   +179
+2027/DOSOMEACTIONS/homework/lesson1.sh                     +60
+2027/DOSOMEACTIONS/homework/output.txt                     +30
+```
+
+### C.2 完整时序（每一步的真实命令）
+
+```
+【阶段一 · 准备】一次性
+ ┌─────────────────────────────────────────────────────────┐
+ │ ① 网页点 Fork                                           │
+ │    OceanCing/missing-semester                           │
+ │              ↓                                          │
+ │    DOSOMEACTIONS/missing-semester                       │
+ └─────────────────────────────────────────────────────────┘
+                          ↓
+ ② git clone git@github.com:DOSOMEACTIONS/missing-semester.git
+                          ↓
+ ③ git remote add upstream git@github.com:OceanCing/missing-semester.git
+                          ↓
+ ④ git switch -c feat/DOSOMEACTIONS-lesson1
+
+
+【阶段二 · 干活】每次作业
+ ┌─────────────────────────────────────────────────────────┐
+ │ ⑤ 建目录                                                │
+ │    mkdir -p 2027/DOSOMEACTIONS/notes \                  │
+ │               2027/DOSOMEACTIONS/homework               │
+ └─────────────────────────────────────────────────────────┘
+                          ↓
+ ⑥ 写文件
+    notes/lesson1-linux-vim-shell-git.md       ← 笔记
+    homework/lesson1.sh                        ← 脚本
+                          ↓
+ ⑦ 跑脚本生成产物
+    cd 2027/DOSOMEACTIONS/homework && ./lesson1.sh
+    → 生成 output.txt
+                          ↓
+ ⑧ 检查 + 暂存
+    git status -sb              （我在什么状态）
+    git add 2027/DOSOMEACTIONS  （挑进暂存区）
+    git review                  （确认 3 个文件）
+                          ↓
+ ⑨ 提交
+    git commit -m "Add lesson1 notes and homework script."
+                          ↓
+ ⑩ 推到自己 fork
+    git push -u origin feat/DOSOMEACTIONS-lesson1
+
+
+【阶段三 · 交付】
+ ┌─────────────────────────────────────────────────────────┐
+ │ ⑪ 网页开 PR，四个框填对                                  │
+ │    base repository: OceanCing/missing-semester           │
+ │    base:            master                              │
+ │    head repository: DOSOMEACTIONS/missing-semester       │
+ │    compare:         feat/DOSOMEACTIONS-lesson1           │
+ │                                                         │
+ │    ✓ Able to merge（出现这句 = 无冲突）                  │
+ └─────────────────────────────────────────────────────────┘
+                          ↓
+ ⑫ 老师 review → 有评论 → 本地改 → commit → push
+    （PR 自动更新，不用重开）
+                          ↓
+    老师点 Merge ✅
+```
+
+### C.3 我这次踩过的 10 个坑
+
+| # | 错误 | 现象 | 正确做法 |
+|---|---|---|---|
+| 1 | `git commit -m` 后面不加引号 | 提交信息变成文件名 `git-全流程地图.md` | `-m "说明文字"` 必须加引号 |
+| 2 | `git push 文件名` | `fatal: 无效的 gitfile 格式` | `git push` 只接「远程名 + 分支名」，不接文件 |
+| 3 | `git commit` 不带 `-m` | 打开 vim 写说明，直接关了 → `提交说明为空，中止提交` | 加 `-m`；或在 vim 里写一行（不以 `#` 开头）再 `:wq` |
+| 4 | 在 GitHub 网页改 README | 远程多一个提交 → push 被拒 `fetch first` | 只在本地改；网页改了就 `git pull --rebase origin main` |
+| 5 | `git checkout -- 文件` | **不可恢复**，把一整节内容弄丢了 | 用 `git stash push -m "说明"`（可恢复）或 `git restore` |
+| 6 | `git restore git- 四阶段地图.md`（中间有空格） | git 当成两个路径，命令失败 | 文件名不能有空格，用 `Tab` 补全 |
+| 7 | 编辑器里还开着旧版本 | **复制了新版，编辑器一保存又变回旧版** | **复制前先关编辑器**；复制后 `wc -l` 验证 |
+| 8 | Markdown 表格列数不齐 | `\|jk\| 代替 Esc\|` 是 2 列，表头 3 列 → 渲染错乱 | 每行竖线数量必须一致 |
+| 9 | 正文塞进代码块 | 三条命令写在 ``` 里面，看起来像代码 | 只有真正的代码/命令才放进 ``` |
+| 10 | API key 写进笔记并推上公开仓库 | 暴露 40 天 | 立刻作废 key；`.env` 写进 `.gitignore` |
+
+### C.4 下次做同样的事，直接抄这段
+
+```bash
+# ========== 一次性（每学期只用做一次）==========
+# 网页：Fork github.com/OceanCing/missing-semester
+git clone git@github.com:DOSOMEACTIONS/missing-semester.git
+cd missing-semester
+git remote add upstream git@github.com:OceanCing/missing-semester.git
+git switch -c feat/DOSOMEACTIONS-lesson2
+
+# ========== 干活 ==========
+mkdir -p 2027/DOSOMEACTIONS/notes 2027/DOSOMEACTIONS/homework
+# 写文件…
+./2027/DOSOMEACTIONS/homework/lesson2.sh
+
+# ========== 提交 ==========
+git status -sb
+git add 2027/DOSOMEACTIONS
+git review
+git commit -m "Add lesson2 notes and homework script."
+git push -u origin feat/DOSOMEACTIONS-lesson2
+
+# ========== 网页开 PR ==========
+# base repository: OceanCing/missing-semester
+# base:            master
+# head repository: DOSOMEACTIONS/missing-semester
+# compare:         feat/DOSOMEACTIONS-lesson2
+```
+
+### C.5 三句话记住整件事
+
+1. **Fork 是复制到我的账号，Clone 是下载到我电脑，Branch 是我在电脑上开的开发线。**
+2. **`push` 只推到我的 fork，永远不会直接改老师的仓库。**
+3. **PR 是「请求」不是「提交」—— 老师点了 Merge 才算真的进去。**
+
+### C.6 如果老师留了评论要改
+
+```bash
+# ① 本地改文件
+vim 2027/DOSOMEACTIONS/notes/xxx.md
+
+# ② 照常提交推送
+git add 2027/DOSOMEACTIONS
+git commit -m "Fix formatting in notes."
+git push
+
+# ③ PR 自动更新 —— 不需要关掉重开
+```
+
+**⚠️ TASK.md 第 9 条明确写了：用 Close PR 再重开的方法规避 Conflict 会被扣分。**
